@@ -1,6 +1,6 @@
 {
   "name": "remark-sectionize",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Wrap content below each heading in a <section> element",
   "main": "index.js",
   "repository": "https://github.com/jake-low/remark-sectionize",
@@ -10,6 +10,13 @@
   "scripts": {
     "test": "node test.js"
   },
+  "keywords": [
+    "remark",
+    "plugin",
+    "markdown",
+    "html",
+    "section"
+  ],
   "dependencies": {
     "unist-util-find-after": "^2.0.2",
     "unist-util-visit-parents": "^2.0.1"
