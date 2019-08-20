@@ -44,40 +44,40 @@ test('sectionize', function (t) {
   `
 
   const expected = u('root', {}, [
-    u('section', { data: { hName: 'section' } }, [
+    u('section', { depth: 1, data: { hName: 'section' } }, [
       u('heading', { depth: 1 }, [u('text', { value: 'Heading 1' })]),
       u('paragraph', {}, [u('text', { value: 'Some text under heading 1.' })]),
-      u('section', { data: { hName: 'section' } }, [
+      u('section', { depth: 2, data: { hName: 'section' } }, [
         u('heading', { depth: 2 }, [u('text', { value: 'Heading 1.1' })]),
         u('paragraph', {}, [u('text', { value: 'Additional text.' })])
       ]),
-      u('section', { data: { hName: 'section' } }, [
+      u('section', { depth: 2, data: { hName: 'section' } }, [
         u('heading', { depth: 2 }, [u('text', { value: 'Heading 1.2' })]),
         u('paragraph', {}, [
           u('emphasis', {}, [u('text', { value: 'More' })]),
           u('text', { value: ' additional text.' })
         ]),
-        u('section', { data: { hName: 'section' } }, [
+        u('section', { depth: 3, data: { hName: 'section' } }, [
           u('heading', { depth: 3 }, [u('text', { value: 'Heading 1.2.1' })]),
           u('blockquote', {}, [
             u('paragraph', {}, [u('text', { value: 'Blockquote' })])
           ]),
           u('paragraph', {}, [u('text', { value: 'Text.' })]),
-          u('section', { data: { hName: 'section' } }, [
+          u('section', { depth: 5, data: { hName: 'section' } }, [
             u('heading', { depth: 5 }, [u('text', { value: 'Bad heading' })]),
             u('paragraph', {}, [u('text', { value: 'Lorem ipsum.' })])
           ])
         ]),
-        u('section', { data: { hName: 'section' } }, [
+        u('section', { depth: 3, data: { hName: 'section' } }, [
           u('heading', { depth: 3 }, [u('text', { value: 'Heading 1.2.2' })]),
           u('paragraph', {}, [u('text', { value: 'Dolor sit amet.' })])
         ])
       ])
     ]),
-    u('section', { data: { hName: 'section' } }, [
+    u('section', { depth: 1, data: { hName: 'section' } }, [
       u('heading', { depth: 1 }, [u('text', { value: 'Heading 2' })]),
       u('paragraph', {}, [u('text', { value: 'Another top level heading.' })]),
-      u('section', { data: { hName: 'section' } }, [
+      u('section', { depth: 6, data: { hName: 'section' } }, [
         u('heading', { depth: 6 }, [
           u('text', { value: 'Another bad heading' })
         ]),
@@ -90,7 +90,7 @@ test('sectionize', function (t) {
 
   sectionize()(tree)
   removePosition(tree, true)
-  t.deepEqual(expected, tree)
+  t.deepEqual(tree, expected)
 
   t.end()
 })

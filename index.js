@@ -21,9 +21,10 @@ function transform (tree) {
 
 function sectionize (node, ancestors) {
   const start = node
+  const depth = start.depth
   const parent = ancestors[ancestors.length - 1]
 
-  const isEnd = node => node.type === 'heading' && node.depth <= start.depth
+  const isEnd = node => node.type === 'heading' && node.depth <= depth
   const end = findAfter(parent, start, isEnd)
 
   const startIndex = parent.children.indexOf(start)
@@ -36,6 +37,7 @@ function sectionize (node, ancestors) {
 
   const section = {
     type: 'section',
+    depth: depth,
     children: between,
     data: {
       hName: 'section'
