@@ -24,7 +24,7 @@ function sectionize (node, ancestors) {
   const depth = start.depth
   const parent = ancestors[ancestors.length - 1]
 
-  const isEnd = node => node.type === 'heading' && node.depth <= depth
+  const isEnd = node => node.type === 'heading' && node.depth <= depth || node.type === 'export'
   const end = findAfter(parent, start, isEnd)
 
   const startIndex = parent.children.indexOf(start)
