@@ -123,6 +123,14 @@ module.exports = {
 };
 ```
 
+## Options
+
+| Option | Type | Default | Description |
+| -------|------|---------|-------------|
+| `maxHeadingDepth` | `integer` | `6` | The maximum depth to look for headings to sectionize. For example, `2` means you would only create sections surrounding `h1` and `h2` tags. |
+| `wrapOrphans` | `boolean` | `false` | Whether you want to wrap orphaned content nodes. An orphaned content node would be a node under `root` without a `section` wrapper. This might happen if you start you document without a `heading`, like in cases where you have a page title defined in frontmatter.
+| `contentNodeTypes` | `string[]` | `['paragraph', 'code', blockquote']` | An array of node types to consider content for the purposes of finding orphans. Has no effect if `wrapOrphans` is `false`.
+
 ## License
 
 This repository is licensed under the MIT license; see the LICENSE file for details.
