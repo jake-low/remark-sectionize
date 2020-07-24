@@ -1,10 +1,8 @@
 const findAfter = require('unist-util-find-after')
 const visit = require('unist-util-visit-parents')
 
-const MAX_HEADING_DEPTH = 6
-
 const defaults = {
-  maxHeadingDepth: MAX_HEADING_DEPTH,
+  maxHeadingDepth: 6,
   wrapIntro: false
 }
 
