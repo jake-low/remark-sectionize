@@ -3,19 +3,37 @@ const visit = require('unist-util-visit-parents')
 
 const MAX_HEADING_DEPTH = 6
 
-module.exports = plugin
-
-function plugin () {
-  return transform
+const defaults = {
+  maxHeadingDepth: MAX_HEADING_DEPTH,
+  wrapIntro: false
 }
 
-function transform (tree) {
-  for (let depth = MAX_HEADING_DEPTH; depth > 0; depth--) {
-    visit(
-      tree,
-      node => node.type === 'heading' && node.depth === depth,
-      sectionize
-    )
+module.exports = plugin
+
+function plugin (options = {}) {
+  const settings = {
+    ...defaults,
+    ...options
+  }
+
+  return transform(settings)
+}
+
+function transform (options) {
+  const { maxHeadingDepth, wrapIntro } = options
+
+  return (tree) => {
+    for (let depth = 1; depth < maxHeadingDepth + 1; depth++) {
+      visit(
+        tree,
+        node => node.type === 'heading' && node.depth === depth,
+        sectionize
+      )
+    }
+
+    if (wrapIntro) {
+      sectionizeIntro(tree)
+    }
   }
 }
 
@@ -24,7 +42,7 @@ function sectionize (node, ancestors) {
   const depth = start.depth
   const parent = ancestors[ancestors.length - 1]
 
-  const isEnd = node => node.type === 'heading' && node.depth <= depth || node.type === 'export'
+  const isEnd = node => node.type === 'heading' && node.depth <= depth || node.type === 'export' || node.type === 'section'
   const end = findAfter(parent, start, isEnd)
 
   const startIndex = parent.children.indexOf(start)
@@ -45,4 +63,28 @@ function sectionize (node, ancestors) {
   }
 
   parent.children.splice(startIndex, section.children.length, section)
+}
+
+function sectionizeIntro (root) {
+  let parent = root
+  let start = parent.children[0]
+  let depth = 1
+
+  if (start.type === 'section') {
+    parent = start
+    start = parent.children[0]
+    depth = 2
+  }
+
+  if (start.type === 'section') {
+    return
+  }
+
+  if (start.type === 'heading') {
+    start = parent.children[1]
+  }
+
+  start.depth = depth
+
+  sectionize(start, [parent])
 }
