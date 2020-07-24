@@ -2,8 +2,9 @@ const findAfter = require('unist-util-find-after')
 const visit = require('unist-util-visit-parents')
 
 const defaults = {
+  contentNodeTypes: ['paragraph', 'code', 'blockquote'],
   maxHeadingDepth: 6,
-  wrapIntro: false
+  wrapOrphans: false
 }
 
 module.exports = plugin
@@ -18,7 +19,7 @@ function plugin (options = {}) {
 }
 
 function transform (options) {
-  const { maxHeadingDepth, wrapIntro } = options
+  const { contentNodeTypes, maxHeadingDepth, wrapOrphans } = options
 
   return (tree) => {
     for (let depth = 1; depth < maxHeadingDepth + 1; depth++) {
@@ -29,8 +30,8 @@ function transform (options) {
       )
     }
 
-    if (wrapIntro) {
-      sectionizeIntro(tree)
+    if (wrapOrphans) {
+      sectionizeOrphans(tree, contentNodeTypes)
     }
   }
 }
@@ -46,6 +47,24 @@ function sectionize (node, ancestors) {
   const startIndex = parent.children.indexOf(start)
   const endIndex = parent.children.indexOf(end)
 
+  insertSection(startIndex, endIndex, depth, parent)
+}
+
+function sectionizeOrphans (root, contentNodeTypes) {
+  const startIndex = findFirstOrphanedContentNodeIndex(root.children[0], root, contentNodeTypes)
+
+  if (startIndex === -1) {
+    return
+  }
+
+  const end = findAfter(root, startIndex, node => node.type === 'section')  
+  const endIndex = root.children.indexOf(end)
+  const depth = 1
+
+  insertSection(startIndex, endIndex, depth, root)
+}
+
+function insertSection (startIndex, endIndex, depth, parent) {
   const between = parent.children.slice(
     startIndex,
     endIndex > 0 ? endIndex : undefined
@@ -60,29 +79,19 @@ function sectionize (node, ancestors) {
     }
   }
 
-  parent.children.splice(startIndex, section.children.length, section)
+  parent.children.splice(startIndex, section.children.length, section) 
 }
 
-function sectionizeIntro (root) {
-  let parent = root
-  let start = parent.children[0]
-  let depth = 1
+function findFirstOrphanedContentNodeIndex(node, parent, contentNodeTypes) {
+  if (!node) {
+    return -1
+  }
+  
+  const nodeIndex = parent.children.indexOf(node)
 
-  if (start.type === 'section') {
-    parent = start
-    start = parent.children[0]
-    depth = 2
+  if (contentNodeTypes.includes(node.type)) {
+    return nodeIndex
   }
 
-  if (start.type === 'section') {
-    return
-  }
-
-  if (start.type === 'heading') {
-    start = parent.children[1]
-  }
-
-  start.depth = depth
-
-  sectionize(start, [parent])
+  return findFirstOrphanedContentNodeIndex(parent.children[nodeIndex + 1], parent, contentNodeTypes)
 }

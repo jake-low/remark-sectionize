@@ -122,13 +122,10 @@ test('sectionize', function (t) {
   t.end()
 })
 
-test('wrapIntro = true', function (t) {
+test('wrapOrphans = true', function (t) {
   const expected = u('root', {}, [
     u('section', { depth: 1, data: { hName: 'section' } }, [
-      u('heading', { depth: 1 }, [u('text', { value: 'Heading 1' })]),
-      u('section', { depth: 2, data: { hName: 'section' } }, [
-        u("paragraph", { depth: 2 }, [u("text", { value: "Some text under heading 1." })]),
-      ]), 
+      ...documentSections['1'],
       u('section', { depth: 2, data: { hName: 'section' } }, [
         ...documentSections['1.1']
       ]),
@@ -156,7 +153,7 @@ test('wrapIntro = true', function (t) {
 
   const tree = remark().parse(document)
 
-  sectionize({ wrapIntro: true })(tree)
+  sectionize({ wrapOrphans: true })(tree)
   removePosition(tree, true)
   t.deepEqual(tree, expected)
 
@@ -192,13 +189,10 @@ test('option maxHeadingDepth = 2', function (t) {
   t.end()
 })
 
-test('maxHeadingDepth = 2, wrapIntro = true', function (t) {
+test('maxHeadingDepth = 2, wrapOrphans = true', function (t) {
   const expected = u('root', {}, [
     u('section', { depth: 1, data: { hName: 'section' } }, [
-      u('heading', { depth: 1 }, [u('text', { value: 'Heading 1' })]),
-      u('section', { depth: 2, data: { hName: 'section' } }, [
-        u("paragraph", { depth: 2 }, [u("text", { value: "Some text under heading 1." })]),
-      ]), 
+      ...documentSections['1'],
       u('section', { depth: 2, data: { hName: 'section' } }, [
         ...documentSections['1.1'],
       ]),
@@ -217,7 +211,7 @@ test('maxHeadingDepth = 2, wrapIntro = true', function (t) {
 
   const tree = remark().parse(document)
 
-  sectionize({ maxHeadingDepth: 2, wrapIntro: true })(tree)
+  sectionize({ maxHeadingDepth: 2, wrapOrphans: true })(tree)
   removePosition(tree, true)
   t.deepEqual(tree, expected)
 
@@ -354,10 +348,10 @@ test('no h1, maxHeadingDepth = 3', function (t) {
   t.end()
 })
 
-test('no h1, maxHeadingDepth = 3, wrapIntro = true', function (t) {
+test('no h1, maxHeadingDepth = 3, wrapOrphans = true', function (t) {
   const expected = u('root', {}, [
     u('section', { depth: 1, data: { hName: 'section' } }, [
-      u("paragraph", { depth: 1 }, [u("text", { value: "Some text under heading 1." })]),
+      u("paragraph", { }, [u("text", { value: "Some text under heading 1." })]),
     ]),
     u('section', { depth: 2, data: { hName: 'section' } }, [
       ...documentNoH1Sections['1.1']
@@ -378,7 +372,7 @@ test('no h1, maxHeadingDepth = 3, wrapIntro = true', function (t) {
 
   const tree = remark().parse(documentNoH1)
 
-  sectionize({ maxHeadingDepth: 3, wrapIntro: true })(tree)
+  sectionize({ maxHeadingDepth: 3, wrapOrphans: true })(tree)
   removePosition(tree, true)
   t.deepEqual(tree, expected)
 
