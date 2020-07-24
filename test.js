@@ -122,7 +122,7 @@ test('sectionize', function (t) {
   t.end()
 })
 
-test('wrapOrphans = true', function (t) {
+test('wrap orphans when none exist should do nothing', function (t) {
   const expected = u('root', {}, [
     u('section', { depth: 1, data: { hName: 'section' } }, [
       ...documentSections['1'],
@@ -160,7 +160,7 @@ test('wrapOrphans = true', function (t) {
   t.end()
 })
 
-test('option maxHeadingDepth = 2', function (t) {
+test('limit heading depth to h2', function (t) {
   const expected = u('root', {}, [
     u('section', { depth: 1, data: { hName: 'section' } }, [
       ...documentSections['1'],
@@ -189,7 +189,7 @@ test('option maxHeadingDepth = 2', function (t) {
   t.end()
 })
 
-test('maxHeadingDepth = 2, wrapOrphans = true', function (t) {
+test('limit heading depth to h2, wrap orphans should have no effect', function (t) {
   const expected = u('root', {}, [
     u('section', { depth: 1, data: { hName: 'section' } }, [
       ...documentSections['1'],
@@ -219,10 +219,12 @@ test('maxHeadingDepth = 2, wrapOrphans = true', function (t) {
 })
 
 /**
- * Markdown document without an h1 tag
+ * Markdown document without an h1 tag, and some leading orphans
  */
-const documentNoH1 = dedent`
-    Some text under heading 1.
+const documentWithOrphans = dedent`
+    > An orphaned blockquote.
+
+    And an orphaned paragraph.
 
     ## Heading 1.1
 
@@ -253,9 +255,12 @@ const documentNoH1 = dedent`
     When will it end?
   `
 
-const documentNoH1Sections = {
+const documentWithOrphansSections = {
   '1': [
-    u('paragraph', {}, [u('text', { value: 'Some text under heading 1.' })]),
+    u('blockquote', {}, [
+      u('paragraph', {}, [u('text', { value: 'An orphaned blockquote.' })])
+    ]),
+    u("paragraph", { }, [u("text", { value: "And an orphaned paragraph." })]),
   ],
   '1.1': [
     u('heading', { depth: 2 }, [u('text', { value: 'Heading 1.1' })]),
@@ -294,23 +299,23 @@ const documentNoH1Sections = {
   ]
 }
 
-test('no h1, maxHeadingDepth = 2', function (t) {
+test('orphaned content, do not wrap it, maxHeadingDepth = 2', function (t) {
   const expected = u('root', {}, [
-    ...documentNoH1Sections['1'],
+    ...documentWithOrphansSections['1'],
     u('section', { depth: 2, data: { hName: 'section' } }, [
-      ...documentNoH1Sections['1.1']
+      ...documentWithOrphansSections['1.1']
     ]),
     u('section', { depth: 2, data: { hName: 'section' } }, [
-      ...documentNoH1Sections['1.2'],
-      ...documentNoH1Sections['1.2.1'],
-      ...documentNoH1Sections['1.2.1-bad'],
-      ...documentNoH1Sections['1.2.2'],
-      ...documentNoH1Sections['2'],
-      ...documentNoH1Sections['2-bad'] 
+      ...documentWithOrphansSections['1.2'],
+      ...documentWithOrphansSections['1.2.1'],
+      ...documentWithOrphansSections['1.2.1-bad'],
+      ...documentWithOrphansSections['1.2.2'],
+      ...documentWithOrphansSections['2'],
+      ...documentWithOrphansSections['2-bad'] 
     ])
   ])
 
-  const tree = remark().parse(documentNoH1)
+  const tree = remark().parse(documentWithOrphans)
 
   sectionize({ maxHeadingDepth: 2 })(tree)
   removePosition(tree, true)
@@ -319,27 +324,27 @@ test('no h1, maxHeadingDepth = 2', function (t) {
   t.end()
 })
 
-test('no h1, maxHeadingDepth = 3', function (t) {
+test('orphaned content, do not wrap it, maxHeadingDepth = 3', function (t) {
   const expected = u('root', {}, [
-    ...documentNoH1Sections['1'],
+    ...documentWithOrphansSections['1'],
     u('section', { depth: 2, data: { hName: 'section' } }, [
-      ...documentNoH1Sections['1.1']
+      ...documentWithOrphansSections['1.1']
     ]),
     u('section', { depth: 2, data: { hName: 'section' } }, [
-      ...documentNoH1Sections['1.2'],
+      ...documentWithOrphansSections['1.2'],
       u('section', { depth: 3, data: { hName: 'section' } }, [
-        ...documentNoH1Sections['1.2.1'],
-        ...documentNoH1Sections['1.2.1-bad']
+        ...documentWithOrphansSections['1.2.1'],
+        ...documentWithOrphansSections['1.2.1-bad']
       ]),
       u('section', { depth: 3, data: { hName: 'section' } }, [
-        ...documentNoH1Sections['1.2.2'],
-        ...documentNoH1Sections['2'],
-        ...documentNoH1Sections['2-bad']   
+        ...documentWithOrphansSections['1.2.2'],
+        ...documentWithOrphansSections['2'],
+        ...documentWithOrphansSections['2-bad']   
       ]),
     ])
   ])
 
-  const tree = remark().parse(documentNoH1)
+  const tree = remark().parse(documentWithOrphans)
 
   sectionize({ maxHeadingDepth: 3 })(tree)
   removePosition(tree, true)
@@ -348,31 +353,63 @@ test('no h1, maxHeadingDepth = 3', function (t) {
   t.end()
 })
 
-test('no h1, maxHeadingDepth = 3, wrapOrphans = true', function (t) {
+test('wrap orphaned content, maxHeadingDepth = 3', function (t) {
   const expected = u('root', {}, [
     u('section', { depth: 1, data: { hName: 'section' } }, [
-      u("paragraph", { }, [u("text", { value: "Some text under heading 1." })]),
+      ...documentWithOrphansSections['1'],
     ]),
     u('section', { depth: 2, data: { hName: 'section' } }, [
-      ...documentNoH1Sections['1.1']
+      ...documentWithOrphansSections['1.1']
     ]),
     u('section', { depth: 2, data: { hName: 'section' } }, [
-      ...documentNoH1Sections['1.2'],
+      ...documentWithOrphansSections['1.2'],
       u('section', { depth: 3, data: { hName: 'section' } }, [
-        ...documentNoH1Sections['1.2.1'],
-        ...documentNoH1Sections['1.2.1-bad']
+        ...documentWithOrphansSections['1.2.1'],
+        ...documentWithOrphansSections['1.2.1-bad']
       ]),
       u('section', { depth: 3, data: { hName: 'section' } }, [
-        ...documentNoH1Sections['1.2.2'],
-        ...documentNoH1Sections['2'],
-        ...documentNoH1Sections['2-bad']   
+        ...documentWithOrphansSections['1.2.2'],
+        ...documentWithOrphansSections['2'],
+        ...documentWithOrphansSections['2-bad']   
       ]),
     ])
   ])
 
-  const tree = remark().parse(documentNoH1)
+  const tree = remark().parse(documentWithOrphans)
 
   sectionize({ maxHeadingDepth: 3, wrapOrphans: true })(tree)
+  removePosition(tree, true)
+  t.deepEqual(tree, expected)
+
+  t.end()
+})
+
+test('wrap orphaned content, skip first nodes that are not allowed', function (t) {
+  const expected = u('root', {}, [
+    documentWithOrphansSections['1'][0],
+    u('section', { depth: 1, data: { hName: 'section' } }, [
+      documentWithOrphansSections['1'][1]
+    ]),
+    u('section', { depth: 2, data: { hName: 'section' } }, [
+      ...documentWithOrphansSections['1.1']
+    ]),
+    u('section', { depth: 2, data: { hName: 'section' } }, [
+      ...documentWithOrphansSections['1.2'],
+      u('section', { depth: 3, data: { hName: 'section' } }, [
+        ...documentWithOrphansSections['1.2.1'],
+        ...documentWithOrphansSections['1.2.1-bad']
+      ]),
+      u('section', { depth: 3, data: { hName: 'section' } }, [
+        ...documentWithOrphansSections['1.2.2'],
+        ...documentWithOrphansSections['2'],
+        ...documentWithOrphansSections['2-bad']   
+      ]),
+    ])
+  ])
+
+  const tree = remark().parse(documentWithOrphans)
+
+  sectionize({ maxHeadingDepth: 3, wrapOrphans: true, contentNodeTypes: ['paragraph'] })(tree)
   removePosition(tree, true)
   t.deepEqual(tree, expected)
 
