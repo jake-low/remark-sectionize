@@ -20,7 +20,7 @@
   ],
   "dependencies": {
     "unist-util-find-after": "^4.0.1",
-    "unist-util-visit-parents": "^5.1.3"
+    "unist-util-visit": "^4.1.2"
   },
   "devDependencies": {
     "dedent": "^0.7.0",
