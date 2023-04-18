@@ -1,9 +1,7 @@
-const findAfter = require('unist-util-find-after')
-const visit = require('unist-util-visit-parents')
+import { findAfter } from 'unist-util-find-after';
+import { visitParents } from 'unist-util-visit-parents';
 
 const MAX_HEADING_DEPTH = 6
-
-module.exports = plugin
 
 function plugin () {
   return transform
@@ -11,7 +9,7 @@ function plugin () {
 
 function transform (tree) {
   for (let depth = MAX_HEADING_DEPTH; depth > 0; depth--) {
-    visit(
+    visitParents(
       tree,
       node => node.type === 'heading' && node.depth === depth,
       sectionize
@@ -46,3 +44,5 @@ function sectionize (node, ancestors) {
 
   parent.children.splice(startIndex, section.children.length, section)
 }
+
+export { plugin as sectionize }

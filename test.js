@@ -1,10 +1,10 @@
-const test = require('tape')
-const u = require('unist-builder')
-const remark = require('remark')
-const dedent = require('dedent')
-const removePosition = require('unist-util-remove-position')
+import test from 'tape';
+import { u } from 'unist-builder'
+import { remark } from 'remark'
+import dedent from 'dedent'
+import { removePosition } from 'unist-util-remove-position'
 
-const sectionize = require('.')
+import { sectionize } from './index.js'
 
 test('sectionize', function (t) {
   const document = dedent`
