@@ -59,8 +59,8 @@ plugin by calling `use()`:
 
 ```js
 import { remark } from 'remark'
-import remarkHtml from 'remark-html'
-import { sectionize } from 'remark-sectionize'
+import html from 'remark-html'
+import sectionize from 'remark-sectionize'
 
 const input = `
 # Hello world!
@@ -70,7 +70,7 @@ The above heading and this paragraph will be wrapped in a <section> tag.
 
 remark()
   .use(sectionize)
-  .use(remarkHtml, { sanitize: false })
+  .use(html, { sanitize: false })
   .process(input, (err, file) => {
     if (err) {
       console.error(err)
@@ -96,7 +96,7 @@ from JS, you can modify the loader options in your webpack config file, adding
 `sectionize` to your `mdPlugins` list (something like the following):
 
 ```js
-import { sectionize } from 'remark-sectionize'
+import sectionize from 'remark-sectionize'
 
 module.exports = {
   module: {

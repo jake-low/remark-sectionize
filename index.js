@@ -43,4 +43,4 @@ function sectionize (node, index, parent) {
   parent.children.splice(startIndex, section.children.length, section)
 }
 
-export { plugin as sectionize }
+export default plugin

@@ -4,7 +4,7 @@ import { remark } from 'remark'
 import dedent from 'dedent'
 import { removePosition } from 'unist-util-remove-position'
 
-import { sectionize } from './index.js'
+import sectionize from './index.js'
 
 test('sectionize', function (t) {
   const document = dedent`
