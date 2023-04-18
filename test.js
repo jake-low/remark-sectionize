@@ -94,3 +94,42 @@ test('sectionize', function (t) {
 
   t.end()
 })
+
+test('sectionize with orphan nodes at start', function (t) {
+  const document = dedent`
+    Some orphan text.
+
+    > An orphan blockquote.
+
+    ## Heading 1
+
+    Some text under heading 1.
+
+    ## Heading 2
+
+    Additional text.
+  `
+
+  const expected = u('root', {}, [
+    u('paragraph', {}, [u('text', { value: 'Some orphan text.' })]),
+    u('blockquote', {}, [
+      u('paragraph', {}, [u('text', { value: 'An orphan blockquote.' })])
+    ]),
+    u('section', { depth: 2, data: { hName: 'section' } }, [
+      u('heading', { depth: 2 }, [u('text', { value: 'Heading 1' })]),
+      u('paragraph', {}, [u('text', { value: 'Some text under heading 1.' })]),
+    ]),
+    u('section', { depth: 2, data: { hName: 'section' } }, [
+      u('heading', { depth: 2 }, [u('text', { value: 'Heading 2' })]),
+      u('paragraph', {}, [u('text', { value: 'Additional text.' })])
+    ]),
+  ])
+
+  const tree = remark().parse(document)
+
+  sectionize()(tree)
+  removePosition(tree, true)
+  t.deepEqual(tree, expected)
+
+  t.end()
+})
