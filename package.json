@@ -1,6 +1,6 @@
 {
   "name": "remark-sectionize",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Wrap content below each heading in a <section> element",
   "main": "index.js",
   "types": "index.d.ts",
